@@ -3,6 +3,7 @@ package buscaCEP.methods;
 import buscaCEP.modulo.Adress;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonSyntaxException;
 
 import java.io.IOException;
 import java.net.URI;
@@ -17,22 +18,19 @@ public class ConsultaCep {
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(link)
                 .build();
+        String json = null;
         try {
             HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
-            String json = response.body();
+            json = response.body();
             System.out.println("JSON recebido: " + json); // <-- debug útil
-
-            // Verifica se o JSON retornado indica erro (como {"erro": true})
-            if (json.contains("\"erro\": true")) {
-                throw new RuntimeException("CEP não encontrado.");
-            }
 
             Gson gson = new GsonBuilder().setPrettyPrinting().create();
             return gson.fromJson(json, Adress.class);
 
-        } catch (IOException | InterruptedException e) {
-            throw new RuntimeException("Erro ao consultar o CEP", e);
+        } catch (IOException | InterruptedException | RuntimeException e) {
+            System.out.println("Erro ao consultar o CEP, tente novamente verificando se o CEP esta inserido corretamente");
+            return null;
         }
     }
 }

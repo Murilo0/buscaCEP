@@ -23,5 +23,6 @@ public class Main {
                 adressesList.add(newAdress);
             }
         }
+        System.out.println(adressesList);
     }
 }
